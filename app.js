@@ -90,7 +90,7 @@ async function generatePrompt(owner, repo, branch, token) {
   }
 
   const nestedTree = buildNestedTree(tree);
-  const fileStructure = generateTreeText(nestedTree);
+  const fileStructure = 'Repository Structure: \n\n' + generateTreeText(nestedTree);
 
   // Define code file extensions and names
   const codeExtensions = [
