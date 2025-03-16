@@ -1,5 +1,5 @@
 {
-  "name": "github-to-prompt",
+  "name": "repo-to-prompt",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
