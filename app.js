@@ -2,9 +2,8 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 
-// Middleware to serve static files and parse form data
+// Middleware to serve static files
 app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));
 
 // Function to escape HTML characters for display
 function escapeHtml(text) {
@@ -129,7 +128,7 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
 
-// Route to handle direct URL query parameters
+// Route to handle URL query parameters
 app.get('/generate', async (req, res) => {
   const repoUrl = req.query.url;
   const token = req.query.token;
@@ -137,22 +136,6 @@ app.get('/generate', async (req, res) => {
   if (!repoUrl) {
     return res.status(400).send('Error: Repository URL is required');
   }
-
-  try {
-    const { owner, repo, branch } = parseRepoUrl(repoUrl);
-    const textPrompt = await generatePrompt(owner, repo, branch, token);
-    // Escape the entire prompt for safe display
-    const escapedPrompt = escapeHtml(textPrompt);
-    res.send(`<pre>${escapedPrompt}</pre>`);
-  } catch (error) {
-    res.status(400).send(`Error: ${error.response?.data?.message || error.message}`);
-  }
-});
-
-// Route to handle form submission
-app.post('/generate', async (req, res) => {
-  const repoUrl = req.body.repoUrl;
-  const token = req.body.token;
 
   try {
     const { owner, repo, branch } = parseRepoUrl(repoUrl);
