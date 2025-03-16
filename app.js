@@ -92,15 +92,17 @@ async function generatePrompt(owner, repo, branch, token) {
   const nestedTree = buildNestedTree(tree);
   const fileStructure = generateTreeText(nestedTree);
 
-  // Define code file extensions
+  // Define code file extensions and names
   const codeExtensions = [
     '.js', '.html', '.css', '.py', '.java', '.ts', '.jsx', '.tsx', '.json', '.yml', '.yaml', '.md'
   ];
+  const codeFileNames = ['Dockerfile']; // Exact file names to include
   const codeFiles = tree.filter(item =>
-    item.type === 'blob' && codeExtensions.some(ext => item.path.endsWith(ext))
+    item.type === 'blob' &&
+    (codeExtensions.some(ext => item.path.endsWith(ext)) || codeFileNames.includes(item.path.split('/').pop()))
   );
 
-  // Fetch contents of code files
+  // Fetch contents of code files as raw text
   const contentHeaders = token
     ? { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3.raw' }
     : { 'Accept': 'application/vnd.github.v3.raw' };
@@ -108,7 +110,10 @@ async function generatePrompt(owner, repo, branch, token) {
     codeFiles.map(async file => {
       const response = await axios.get(
         `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}?ref=${defaultBranch}`,
-        { headers: contentHeaders }
+        {
+          headers: contentHeaders,
+          responseType: 'text' // Force raw text response
+        }
       );
       return { path: file.path, content: response.data };
     })
