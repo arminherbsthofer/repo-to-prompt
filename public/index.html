@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GitHub Repo to Text Prompt</title>
+</head>
+<body>
+  <h1>GitHub Repo to Text Prompt</h1>
+  <p>
+    Use the form below or pass parameters directly in the URL, e.g.: 
+    <code>/generate?url=https://github.com/owner/repo/tree/branch&token=your_token</code>
+  </p>
+  <p>All file contents are displayed as raw text and can be copied directly.</p>
+  <form id="repoForm">
+    <label for="repoUrl">Repository URL:</label>
+    <input type="text" id="repoUrl" name="repoUrl" placeholder="https://github.com/owner/repo or /tree/branch" required><br>
+    <label for="token">GitHub Token (optional):</label>
+    <input type="text" id="token" name="token" placeholder="For private repos"><br>
+    <button type="submit">Generate</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('repoForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const repoUrl = document.getElementById('repoUrl').value;
+      const token = document.getElementById('token').value;
+      document.getElementById('result').innerHTML = 'Loading...';
+
+      const response = await fetch('/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `repoUrl=${encodeURIComponent(repoUrl)}&token=${encodeURIComponent(token)}`
+      });
+
+      if (response.ok) {
+        document.getElementById('result').innerHTML = await response.text();
+      } else {
+        document.getElementById('result').innerHTML = await response.text();
+      }
+    });
+  </script>
+</body>
+</html>
